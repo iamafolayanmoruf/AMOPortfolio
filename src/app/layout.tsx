@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Afolayan Moruf O | Software Developer",
+  title: "AMO Portfolio | Afolayan Moruf O",
   description:
     "Personal portfolio of Afolayan Moruf O — a passionate software developer building modern web and mobile experiences with React, Next.js, React Native, and more.",
   keywords: [

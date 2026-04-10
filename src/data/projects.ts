@@ -105,10 +105,10 @@ export const projects: Project[] = [
   },
   {
     id: 10,
-    name: "Developer Portfolio Website",
+    name: "AMO Portfolio",
     description:
-      "A modern, animated developer portfolio built with Next.js, Tailwind CSS, and Framer Motion for a premium experience.",
-    image: "/images/project-placeholder.png",
+      "A modern, animated portfolio built with Next.js, Tailwind CSS, and Framer Motion for a premium experience.",
+    image: "/images/profile.png",
     liveLink: "#",
     stack: ["Next.js", "Tailwind CSS", "Framer Motion"],
     category: "web",

@@ -31,7 +31,7 @@ export default function LoadingScreen() {
               transition={{ delay: 0.4, duration: 0.5 }}
               className="text-xl font-bold tracking-wider text-white"
             >
-              AMO<span className="text-red-500">.</span>
+              AMO Portfolio<span className="text-red-500">.</span>
             </motion.p>
           </div>
         </motion.div>

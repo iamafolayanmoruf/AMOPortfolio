@@ -5,6 +5,8 @@
 export const personalInfo = {
   name: "Afolayan Moruf O",
   firstName: "Moruf",
+  /** Site / nav brand */
+  siteName: "AMO Portfolio",
   role: "Software Developer",
   tagline: "Building modern web and mobile experiences",
   email: "afolayanmoruf53@gmail.com",

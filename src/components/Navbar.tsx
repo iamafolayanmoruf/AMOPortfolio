@@ -55,7 +55,8 @@ export default function Navbar() {
           whileHover={{ scale: 1.05 }}
           className="text-2xl font-bold text-white"
         >
-          {personalInfo.firstName}<span className="text-red-500">.</span>
+          {personalInfo.siteName}
+          <span className="text-red-500">.</span>
         </motion.a>
 
         <ul className="hidden items-center gap-1 md:flex">
