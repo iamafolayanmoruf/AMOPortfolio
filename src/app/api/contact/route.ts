@@ -1,14 +1,10 @@
 import { NextResponse } from "next/server";
+import { personalInfo } from "@/data/personal";
 
-/** Prefer server-only env on Vercel; NEXT_PUBLIC_ fallback supports older setups. */
-function getWeb3Key(): string {
-  return (
-    process.env.WEB3FORMS_ACCESS_KEY ??
-    process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY ??
-    ""
-  ).trim();
-}
-
+/**
+ * Sends contact form via FormSubmit.co (free, no API key).
+ * Optional: set CONTACT_INBOX_EMAIL in Vercel to override the inbox (defaults to personalInfo.email).
+ */
 export async function POST(request: Request) {
   let body: unknown;
   try {
@@ -30,30 +26,29 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: false, message: "Invalid email" }, { status: 400 });
   }
 
-  const access_key = getWeb3Key();
-  if (!access_key) {
-    return NextResponse.json(
-      { success: false, message: "not_configured" },
-      { status: 503 }
-    );
-  }
+  const inbox =
+    process.env.CONTACT_INBOX_EMAIL?.trim() || personalInfo.email;
 
-  const res = await fetch("https://api.web3forms.com/submit", {
+  const url = `https://formsubmit.co/ajax/${encodeURIComponent(inbox)}`;
+
+  const res = await fetch(url, {
     method: "POST",
-    headers: { "Content-Type": "application/json", Accept: "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
     body: JSON.stringify({
-      access_key,
-      subject: `Portfolio: message from ${name}`,
-      from_name: name,
       name,
       email,
       message,
+      _subject: `Portfolio: message from ${name}`,
+      _captcha: false,
     }),
   });
 
-  let data: { success?: boolean; message?: string };
+  let data: { success?: boolean | string; message?: string };
   try {
-    data = (await res.json()) as { success?: boolean; message?: string };
+    data = (await res.json()) as { success?: boolean | string; message?: string };
   } catch {
     return NextResponse.json(
       { success: false, message: "Invalid response from form service" },
@@ -61,10 +56,13 @@ export async function POST(request: Request) {
     );
   }
 
-  if (!res.ok || !data.success) {
-    const detail = data.message?.trim() || "Submit failed";
-    return NextResponse.json({ success: false, message: detail }, { status: 502 });
+  if (res.ok && (data.success === true || data.success === "true")) {
+    return NextResponse.json({ success: true });
   }
 
-  return NextResponse.json({ success: true });
+  const detail =
+    typeof data.message === "string" && data.message.trim()
+      ? data.message.trim()
+      : "Form service rejected the request. Try again or use email above.";
+  return NextResponse.json({ success: false, message: detail }, { status: 502 });
 }

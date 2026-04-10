@@ -15,9 +15,7 @@ export default function Contact() {
   const [form, setForm] = useState<FormState>({ name: "", email: "", message: "" });
   const [status, setStatus] = useState<Status>("idle");
   const [errors, setErrors] = useState<Partial<FormState>>({});
-  /** Set when submit fails so we can show a specific hint (e.g. Vercel env missing). */
-  const [submitError, setSubmitError] = useState<"none" | "not_configured" | "generic">("none");
-  /** Server / Web3Forms error text when submit fails */
+  /** Extra detail from the server (e.g. FormSubmit message) */
   const [errorDetail, setErrorDetail] = useState<string | null>(null);
 
   const validate = (): boolean => {
@@ -35,7 +33,6 @@ export default function Contact() {
     if (!validate()) return;
 
     setStatus("sending");
-    setSubmitError("none");
     setErrorDetail(null);
     try {
       const res = await fetch("/api/contact", {
@@ -53,7 +50,6 @@ export default function Contact() {
         data = (await res.json()) as { success?: boolean; message?: string };
       } catch {
         setStatus("error");
-        setSubmitError("generic");
         setErrorDetail("Could not read the server response. Try again later.");
         return;
       }
@@ -66,15 +62,9 @@ export default function Contact() {
       }
 
       setStatus("error");
-      const notConfigured =
-        res.status === 503 || data.message === "not_configured";
-      setSubmitError(notConfigured ? "not_configured" : "generic");
-      if (data.message && data.message !== "not_configured") {
-        setErrorDetail(data.message);
-      }
+      if (data.message) setErrorDetail(data.message);
     } catch {
       setStatus("error");
-      setSubmitError("generic");
       setErrorDetail("Network error. Check your connection and try again.");
     }
   };
@@ -123,21 +113,11 @@ export default function Contact() {
             )}
             {status === "error" && (
               <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="text-center text-sm text-red-400">
-                {submitError === "not_configured" ? (
-                  <>
-                    Vercel doesn&apos;t have your Web3Forms key yet. In Vercel → <strong>Settings → Environment Variables</strong>, set{" "}
-                    <code className="text-red-300">WEB3FORMS_ACCESS_KEY</code> = your key (name on the left, key on the right), then{" "}
-                    <strong>Redeploy</strong> the project. Or email me using the address above.
-                  </>
-                ) : (
-                  <>
-                    <span className="block">
-                      Something went wrong sending the message. Try again, or email me directly above.
-                    </span>
-                    {errorDetail && (
-                      <span className="mt-2 block text-xs text-red-300/90">{errorDetail}</span>
-                    )}
-                  </>
+                <span className="block">
+                  Something went wrong sending the message. Try again, or email me directly above.
+                </span>
+                {errorDetail && (
+                  <span className="mt-2 block text-xs text-red-300/90">{errorDetail}</span>
                 )}
               </motion.p>
             )}
