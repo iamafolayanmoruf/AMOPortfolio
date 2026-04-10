@@ -15,6 +15,8 @@ export default function Contact() {
   const [form, setForm] = useState<FormState>({ name: "", email: "", message: "" });
   const [status, setStatus] = useState<Status>("idle");
   const [errors, setErrors] = useState<Partial<FormState>>({});
+  /** Set when submit fails so we can show a specific hint (e.g. Vercel env missing). */
+  const [submitError, setSubmitError] = useState<"none" | "not_configured" | "generic">("none");
 
   const validate = (): boolean => {
     const e: Partial<FormState> = {};
@@ -31,6 +33,7 @@ export default function Contact() {
     if (!validate()) return;
 
     setStatus("sending");
+    setSubmitError("none");
     try {
       const res = await fetch("/api/contact", {
         method: "POST",
@@ -49,9 +52,13 @@ export default function Contact() {
         setTimeout(() => setStatus("idle"), 5000);
       } else {
         setStatus("error");
+        const notConfigured =
+          res.status === 503 || data.message === "not_configured";
+        setSubmitError(notConfigured ? "not_configured" : "generic");
       }
     } catch {
       setStatus("error");
+      setSubmitError("generic");
     }
   };
 
@@ -99,7 +106,17 @@ export default function Contact() {
             )}
             {status === "error" && (
               <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="text-center text-sm text-red-400">
-                Something went wrong, or the form isn&apos;t configured on the server yet. Email me directly above, or add <code className="text-red-300">WEB3FORMS_ACCESS_KEY</code> in Vercel → Settings → Environment Variables.
+                {submitError === "not_configured" ? (
+                  <>
+                    Vercel doesn&apos;t have your Web3Forms key yet. In Vercel → <strong>Settings → Environment Variables</strong>, set{" "}
+                    <code className="text-red-300">WEB3FORMS_ACCESS_KEY</code> = your key (name on the left, key on the right), then{" "}
+                    <strong>Redeploy</strong> the project. Or email me using the address above.
+                  </>
+                ) : (
+                  <>
+                    Something went wrong sending the message. Try again, or email me directly above.
+                  </>
+                )}
               </motion.p>
             )}
           </motion.form>
