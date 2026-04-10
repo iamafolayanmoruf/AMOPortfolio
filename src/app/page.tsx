@@ -7,7 +7,6 @@ import Skills from "@/components/Skills";
 import Projects from "@/components/Projects";
 import CurrentlyWorkingOn from "@/components/CurrentlyWorkingOn";
 import Experience from "@/components/Experience";
-import Testimonials from "@/components/Testimonials";
 import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
 import BackgroundEffects from "@/components/BackgroundEffects";
@@ -26,7 +25,6 @@ export default function Home() {
         <Projects />
         <CurrentlyWorkingOn />
         <Experience />
-        <Testimonials />
         <Contact />
       </main>
       <Footer />

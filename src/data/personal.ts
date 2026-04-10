@@ -79,22 +79,4 @@ export const personalInfo = {
       tech: ["Next.js", "Tailwind CSS", "Framer Motion"],
     },
   ],
-
-  testimonials: [
-    {
-      name: "Client Name",
-      role: "CEO, Company",
-      text: "Working with Moruf was a fantastic experience. He delivered a polished product ahead of schedule.",
-    },
-    {
-      name: "Colleague Name",
-      role: "Lead Developer",
-      text: "Moruf has an exceptional eye for design and writes clean, maintainable code. Highly recommended.",
-    },
-    {
-      name: "Mentor Name",
-      role: "Senior Engineer",
-      text: "A dedicated developer who consistently goes above and beyond. His growth has been remarkable.",
-    },
-  ],
 };
