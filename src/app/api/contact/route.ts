@@ -6,7 +6,7 @@ function getWeb3Key(): string {
     process.env.WEB3FORMS_ACCESS_KEY ??
     process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY ??
     ""
-  );
+  ).trim();
 }
 
 export async function POST(request: Request) {
@@ -51,12 +51,19 @@ export async function POST(request: Request) {
     }),
   });
 
-  const data = (await res.json()) as { success?: boolean; message?: string };
-  if (!res.ok || !data.success) {
+  let data: { success?: boolean; message?: string };
+  try {
+    data = (await res.json()) as { success?: boolean; message?: string };
+  } catch {
     return NextResponse.json(
-      { success: false, message: data.message ?? "Submit failed" },
+      { success: false, message: "Invalid response from form service" },
       { status: 502 }
     );
+  }
+
+  if (!res.ok || !data.success) {
+    const detail = data.message?.trim() || "Submit failed";
+    return NextResponse.json({ success: false, message: detail }, { status: 502 });
   }
 
   return NextResponse.json({ success: true });

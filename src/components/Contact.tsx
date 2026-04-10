@@ -17,6 +17,8 @@ export default function Contact() {
   const [errors, setErrors] = useState<Partial<FormState>>({});
   /** Set when submit fails so we can show a specific hint (e.g. Vercel env missing). */
   const [submitError, setSubmitError] = useState<"none" | "not_configured" | "generic">("none");
+  /** Server / Web3Forms error text when submit fails */
+  const [errorDetail, setErrorDetail] = useState<string | null>(null);
 
   const validate = (): boolean => {
     const e: Partial<FormState> = {};
@@ -34,6 +36,7 @@ export default function Contact() {
 
     setStatus("sending");
     setSubmitError("none");
+    setErrorDetail(null);
     try {
       const res = await fetch("/api/contact", {
         method: "POST",
@@ -44,21 +47,35 @@ export default function Contact() {
           message: form.message,
         }),
       });
-      const data = (await res.json()) as { success?: boolean; message?: string };
+
+      let data: { success?: boolean; message?: string } = {};
+      try {
+        data = (await res.json()) as { success?: boolean; message?: string };
+      } catch {
+        setStatus("error");
+        setSubmitError("generic");
+        setErrorDetail("Could not read the server response. Try again later.");
+        return;
+      }
 
       if (res.ok && data.success) {
         setStatus("success");
         setForm({ name: "", email: "", message: "" });
         setTimeout(() => setStatus("idle"), 5000);
-      } else {
-        setStatus("error");
-        const notConfigured =
-          res.status === 503 || data.message === "not_configured";
-        setSubmitError(notConfigured ? "not_configured" : "generic");
+        return;
+      }
+
+      setStatus("error");
+      const notConfigured =
+        res.status === 503 || data.message === "not_configured";
+      setSubmitError(notConfigured ? "not_configured" : "generic");
+      if (data.message && data.message !== "not_configured") {
+        setErrorDetail(data.message);
       }
     } catch {
       setStatus("error");
       setSubmitError("generic");
+      setErrorDetail("Network error. Check your connection and try again.");
     }
   };
 
@@ -114,7 +131,12 @@ export default function Contact() {
                   </>
                 ) : (
                   <>
-                    Something went wrong sending the message. Try again, or email me directly above.
+                    <span className="block">
+                      Something went wrong sending the message. Try again, or email me directly above.
+                    </span>
+                    {errorDetail && (
+                      <span className="mt-2 block text-xs text-red-300/90">{errorDetail}</span>
+                    )}
                   </>
                 )}
               </motion.p>
