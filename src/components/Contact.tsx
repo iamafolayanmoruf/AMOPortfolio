@@ -11,9 +11,6 @@ import Button from "@/components/ui/Button";
 type FormState = { name: string; email: string; message: string };
 type Status = "idle" | "sending" | "success" | "error";
 
-/** Get a free key at https://web3forms.com — add NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY to .env.local and Vercel env. */
-const WEB3FORMS_KEY = process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY ?? "";
-
 export default function Contact() {
   const [form, setForm] = useState<FormState>({ name: "", email: "", message: "" });
   const [status, setStatus] = useState<Status>("idle");
@@ -33,27 +30,20 @@ export default function Contact() {
     e.preventDefault();
     if (!validate()) return;
 
-    if (!WEB3FORMS_KEY) {
-      setStatus("error");
-      return;
-    }
-
     setStatus("sending");
     try {
-      const res = await fetch("https://api.web3forms.com/submit", {
+      const res = await fetch("/api/contact", {
         method: "POST",
-        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          access_key: WEB3FORMS_KEY,
-          subject: `Portfolio: message from ${form.name}`,
-          from_name: form.name,
           name: form.name,
           email: form.email,
           message: form.message,
         }),
       });
       const data = (await res.json()) as { success?: boolean; message?: string };
-      if (data.success) {
+
+      if (res.ok && data.success) {
         setStatus("success");
         setForm({ name: "", email: "", message: "" });
         setTimeout(() => setStatus("idle"), 5000);
@@ -109,9 +99,7 @@ export default function Contact() {
             )}
             {status === "error" && (
               <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="text-center text-sm text-red-400">
-                {WEB3FORMS_KEY
-                  ? "Something went wrong. Please try again or email me directly."
-                  : "Form email is not configured yet. Use the email above or add NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY (see web3forms.com)."}
+                Something went wrong, or the form isn&apos;t configured on the server yet. Email me directly above, or add <code className="text-red-300">WEB3FORMS_ACCESS_KEY</code> in Vercel → Settings → Environment Variables.
               </motion.p>
             )}
           </motion.form>
