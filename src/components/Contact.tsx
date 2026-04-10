@@ -11,6 +11,9 @@ import Button from "@/components/ui/Button";
 type FormState = { name: string; email: string; message: string };
 type Status = "idle" | "sending" | "success" | "error";
 
+/** Get a free key at https://web3forms.com — add NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY to .env.local and Vercel env. */
+const WEB3FORMS_KEY = process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY ?? "";
+
 export default function Contact() {
   const [form, setForm] = useState<FormState>({ name: "", email: "", message: "" });
   const [status, setStatus] = useState<Status>("idle");
@@ -29,11 +32,37 @@ export default function Contact() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
+
+    if (!WEB3FORMS_KEY) {
+      setStatus("error");
+      return;
+    }
+
     setStatus("sending");
-    await new Promise((r) => setTimeout(r, 1500));
-    setStatus("success");
-    setForm({ name: "", email: "", message: "" });
-    setTimeout(() => setStatus("idle"), 4000);
+    try {
+      const res = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({
+          access_key: WEB3FORMS_KEY,
+          subject: `Portfolio: message from ${form.name}`,
+          from_name: form.name,
+          name: form.name,
+          email: form.email,
+          message: form.message,
+        }),
+      });
+      const data = (await res.json()) as { success?: boolean; message?: string };
+      if (data.success) {
+        setStatus("success");
+        setForm({ name: "", email: "", message: "" });
+        setTimeout(() => setStatus("idle"), 5000);
+      } else {
+        setStatus("error");
+      }
+    } catch {
+      setStatus("error");
+    }
   };
 
   const inputBase = "w-full rounded-xl border bg-white/[0.02] px-4 py-3 text-sm text-white placeholder-gray-500 outline-none transition-all duration-300 focus:ring-2 focus:ring-red-500/40";
@@ -79,7 +108,11 @@ export default function Contact() {
               <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="text-center text-sm text-green-400">Message sent successfully! I&apos;ll get back to you soon.</motion.p>
             )}
             {status === "error" && (
-              <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="text-center text-sm text-red-400">Something went wrong. Please try again.</motion.p>
+              <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="text-center text-sm text-red-400">
+                {WEB3FORMS_KEY
+                  ? "Something went wrong. Please try again or email me directly."
+                  : "Form email is not configured yet. Use the email above or add NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY (see web3forms.com)."}
+              </motion.p>
             )}
           </motion.form>
         </motion.div>
