@@ -117,8 +117,8 @@ export default function Hero() {
                 alt={personalInfo.name}
                 fill
                 sizes="(max-width: 640px) 288px, (max-width: 1024px) 320px, 400px"
-                className="object-cover scale-[1.05]"
-                style={{ objectPosition: "50% 38%" }}
+                className="object-cover scale-[1.02]"
+                style={{ objectPosition: "50% 22%" }}
                 priority
               />
               {/* Blend light photo edges into page black */}
