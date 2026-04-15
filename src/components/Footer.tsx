@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { FiMail, FiPhone, FiArrowUp } from "react-icons/fi";
+import { FiMail, FiArrowUp } from "react-icons/fi";
 import { FaWhatsapp } from "react-icons/fa";
 import { personalInfo } from "@/data/personal";
 
@@ -12,7 +12,6 @@ export default function Footer() {
 
   const socials = [
     { icon: FiMail, href: `mailto:${personalInfo.email}`, label: "Gmail" },
-    { icon: FiPhone, href: `tel:${personalInfo.phone}`, label: "Phone" },
     ...(whatsappNumber ? [{ icon: FaWhatsapp, href: `https://wa.me/${whatsappNumber}`, label: "WhatsApp" } as const] : []),
   ];
 

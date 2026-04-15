@@ -2,7 +2,8 @@
 
 import { useState, type FormEvent } from "react";
 import { motion } from "framer-motion";
-import { FiMail, FiSend, FiPhone } from "react-icons/fi";
+import { FiMail, FiSend } from "react-icons/fi";
+import { FaWhatsapp } from "react-icons/fa";
 import { fadeInUp, staggerContainer } from "@/lib/animations";
 import { personalInfo } from "@/data/personal";
 import SectionHeading from "@/components/ui/SectionHeading";
@@ -72,6 +73,8 @@ export default function Contact() {
   const inputBase =
     "w-full rounded-xl border bg-white/[0.02] px-4 py-3 text-sm text-white placeholder-gray-500 outline-none transition-all duration-300 focus:ring-0 focus:ring-transparent focus:border-white/15";
 
+  const whatsappNumber = String(personalInfo.phone ?? "").replace(/[^\d]/g, "");
+
   return (
     <section id="contact" className="section-padding px-6">
       <div className="mx-auto max-w-5xl">
@@ -81,15 +84,29 @@ export default function Contact() {
             <p className="leading-relaxed text-gray-300">
               I&apos;m always excited to hear about new projects and opportunities. Whether you have a question, a proposal, or just want to say hello, feel free to reach out!
             </p>
-            <div className="space-y-4">
-              <motion.a href={`mailto:${personalInfo.email}`} whileHover={{ x: 6 }} className="group flex items-center gap-4 text-white hover:text-red-400">
-                <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-red-500/10 text-red-500 group-hover:bg-red-500/20 group-hover:shadow-lg group-hover:shadow-red-500/20"><FiMail size={20} /></span>
-                <span className="text-sm">{personalInfo.email}</span>
+            <div className="flex items-center gap-4">
+              <motion.a
+                href={`mailto:${personalInfo.email}`}
+                whileHover={{ scale: 1.08, y: -2 }}
+                whileTap={{ scale: 0.95 }}
+                className="flex h-12 w-12 items-center justify-center rounded-xl bg-red-500/10 text-red-500 hover:bg-red-500/20 hover:shadow-lg hover:shadow-red-500/20"
+                aria-label="Gmail"
+              >
+                <FiMail size={20} />
               </motion.a>
-              <motion.a href={`tel:${personalInfo.phone}`} whileHover={{ x: 6 }} className="group flex items-center gap-4 text-white hover:text-red-400">
-                <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-red-500/10 text-red-500 group-hover:bg-red-500/20 group-hover:shadow-lg group-hover:shadow-red-500/20"><FiPhone size={20} /></span>
-                <span className="text-sm">{personalInfo.phone}</span>
-              </motion.a>
+              {whatsappNumber && (
+                <motion.a
+                  href={`https://wa.me/${whatsappNumber}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  whileHover={{ scale: 1.08, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="flex h-12 w-12 items-center justify-center rounded-xl bg-red-500/10 text-red-500 hover:bg-red-500/20 hover:shadow-lg hover:shadow-red-500/20"
+                  aria-label="WhatsApp"
+                >
+                  <FaWhatsapp size={20} />
+                </motion.a>
+              )}
             </div>
           </motion.div>
 
