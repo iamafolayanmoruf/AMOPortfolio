@@ -69,7 +69,8 @@ export default function Contact() {
     }
   };
 
-  const inputBase = "w-full rounded-xl border bg-white/[0.02] px-4 py-3 text-sm text-white placeholder-gray-500 outline-none transition-all duration-300 focus:ring-2 focus:ring-red-500/40";
+  const inputBase =
+    "w-full rounded-xl border bg-white/[0.02] px-4 py-3 text-sm text-white placeholder-gray-500 outline-none transition-all duration-300 focus:ring-0 focus:ring-transparent focus:border-white/15";
 
   return (
     <section id="contact" className="section-padding px-6">
