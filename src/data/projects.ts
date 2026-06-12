@@ -99,7 +99,7 @@ export const projects: Project[] = [
     description:
       "A recycling rewards app where users earn points and cash by scanning and recycling bottles and cans.",
     image: "/images/project-plasticpay.png",
-    liveLink: "https://yourprojectlink.com",
+    liveLink: "https://demoplasticpay.netlify.app/",
     stack: ["React Native", "Supabase", "Expo"],
     category: "mobile",
   },
