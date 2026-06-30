@@ -109,7 +109,7 @@ export const projects: Project[] = [
     description:
       "A modern, animated portfolio built with Next.js, Tailwind CSS, and Framer Motion for a premium experience.",
     image: "/images/profile.png",
-    liveLink: "#",
+    liveLink: "https://amo-portfolio-plum.vercel.app/",
     stack: ["Next.js", "Tailwind CSS", "Framer Motion"],
     category: "web",
   },
